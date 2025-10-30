@@ -260,10 +260,6 @@ other_clients = [
 - Timestamps de Lamport garantem ordenação consistente
 - Sistema funciona em rede local ou distribuída
 
-## Implementação Anterior (ACO)
-
-A implementação anterior do algoritmo de colônia de formigas para balanceamento de carga está disponível no diretório `old_aco_implementation/`. Para mais informações, consulte o README naquele diretório.
-
 ## Licença
 
 Este projeto está licenciado sob a licença MIT.

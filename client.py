@@ -57,21 +57,21 @@ class MutualExclusionServiceImpl(distributed_printing_pb2_grpc.MutualExclusionSe
                 (self.client.request_timestamp, self.client.client_id)
             )
             
+            response_timestamp = self.client.clock.increment()
+            
             if should_grant:
                 # Grant access immediately
-                response_timestamp = self.client.clock.increment()
                 self.client.log(f"GRANTED access to Client {requesting_client} (TS: {requesting_timestamp})")
                 return distributed_printing_pb2.AccessResponse(
                     access_granted=True,
                     lamport_timestamp=response_timestamp
                 )
             else:
-                # Defer the request
+                # Defer the request - save it to grant later
                 self.client.deferred_requests.append((requesting_client, request.lamport_timestamp))
                 self.client.log(f"DEFERRED access for Client {requesting_client} (TS: {requesting_timestamp})")
                 
-                # Still send a response but with granted=False to acknowledge receipt
-                response_timestamp = self.client.clock.increment()
+                # Return deferred response - client will wait for explicit grant via ReleaseAccess
                 return distributed_printing_pb2.AccessResponse(
                     access_granted=False,
                     lamport_timestamp=response_timestamp
@@ -80,6 +80,7 @@ class MutualExclusionServiceImpl(distributed_printing_pb2_grpc.MutualExclusionSe
     def ReleaseAccess(self, request, context):
         """
         Handle release notification from another client.
+        This serves as an explicit grant for clients who were deferred.
         
         Args:
             request: ReleaseMessage from another client
@@ -93,6 +94,12 @@ class MutualExclusionServiceImpl(distributed_printing_pb2_grpc.MutualExclusionSe
         
         with self.client.lock:
             self.client.log(f"Received RELEASE from Client {request.client_id}")
+            
+            # If we're waiting for replies, count this as a grant
+            if self.client.requesting:
+                self.client.replies_received += 1
+                self.client.log(f"Counted as grant ({self.client.replies_received}/{len(self.client.other_clients)})")
+            
             response_timestamp = self.client.clock.increment()
             
             return distributed_printing_pb2.ReleaseResponse(
@@ -222,17 +229,14 @@ class IntelligentClient:
             # Update clock with response
             self.clock.update(response.lamport_timestamp)
             
-            # If access granted, increment reply count
+            # Only count grants as replies, not deferrals
             if response.access_granted:
                 with self.lock:
                     self.replies_received += 1
                     self.log(f"Received GRANT from Client {target_client_id} ({self.replies_received}/{len(self.other_clients)})")
             else:
-                # Access deferred, will be granted later
-                # For simplicity, we count deferred as received and will wait
-                with self.lock:
-                    self.replies_received += 1
-                    self.log(f"Received DEFER from Client {target_client_id} ({self.replies_received}/{len(self.other_clients)})")
+                # Access deferred - will receive explicit grant via ReleaseAccess later
+                self.log(f"Request DEFERRED by Client {target_client_id} (will grant on release)")
             
             channel.close()
         except grpc.RpcError as e:
