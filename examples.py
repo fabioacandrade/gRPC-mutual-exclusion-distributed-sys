@@ -6,6 +6,8 @@ This file demonstrates different ways to use the load balancer.
 import random
 from load_balancer import LoadBalancer
 from request import Request
+from server import Server
+from ant_colony import AntColonyOptimizer
 
 
 def example_basic_usage():
@@ -113,8 +115,6 @@ def example_custom_servers():
     print("EXAMPLE 4: Servers with Different Capacities")
     print("="*60)
     
-    from server import Server
-    
     # Create servers with different capacities
     servers = [
         Server(0, capacity=50.0),   # Small server
@@ -123,7 +123,6 @@ def example_custom_servers():
     ]
     
     # Create custom load balancer
-    from ant_colony import AntColonyOptimizer
     aco = AntColonyOptimizer(
         servers=servers,
         num_ants=15,
@@ -142,8 +141,9 @@ def example_custom_servers():
     # Apply assignment
     for request_id, server_id in best_assignment:
         request = requests[request_id]
-        server = next(s for s in servers if s.id == server_id)
-        server.add_load(request.load)
+        server = next((s for s in servers if s.id == server_id), None)
+        if server:
+            server.add_load(request.load)
     
     # Display results
     print("\nServer Status:")
