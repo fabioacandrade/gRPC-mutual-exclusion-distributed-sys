@@ -1,0 +1,22 @@
+#!/bin/bash
+# Script to help run the distributed printing system
+
+echo "======================================================================"
+echo "Distributed Printing System with Ricart-Agrawala Mutual Exclusion"
+echo "======================================================================"
+echo ""
+echo "This script will help you run the system in multiple terminals."
+echo ""
+echo "INSTRUCTIONS:"
+echo "1. Open 4 terminal windows"
+echo "2. In Terminal 1, run: python3 print_server.py"
+echo "3. In Terminal 2, run: python3 client.py 1"
+echo "4. In Terminal 3, run: python3 client.py 2"
+echo "5. In Terminal 4, run: python3 client.py 3"
+echo ""
+echo "The clients will automatically generate print requests and coordinate"
+echo "using the Ricart-Agrawala algorithm to ensure mutual exclusion."
+echo ""
+echo "Press Ctrl+C in each terminal to stop the respective process."
+echo ""
+echo "======================================================================"

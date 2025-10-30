@@ -1,5 +1,7 @@
-# No external dependencies required for basic functionality
-# Python standard library is sufficient
+# gRPC dependencies for distributed printing system
+grpcio>=1.50.0
+grpcio-tools>=1.50.0
+protobuf>=4.21.0
 
 # Optional: For enhanced visualization (uncomment if needed)
 # matplotlib>=3.5.0

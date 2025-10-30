@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package distributed_printing;
+
+// Service for the "dumb" print server (implemented on the server)
+service PrintingService {
+  rpc SendToPrinter (PrintRequest) returns (PrintResponse);
+}
+
+// Service for communication between CLIENTS (implemented on clients)
+service MutualExclusionService {
+  rpc RequestAccess (AccessRequest) returns (AccessResponse);
+  rpc ReleaseAccess (ReleaseMessage) returns (ReleaseResponse);
+}
+
+// Messages for printing (client -> dumb server)
+message PrintRequest {
+  int32 client_id = 1;
+  string message_content = 2;
+  int64 lamport_timestamp = 3;
+  int32 request_number = 4;
+}
+
+message PrintResponse {
+  bool success = 1;
+  string confirmation_message = 2;
+  int64 lamport_timestamp = 3;
+}
+
+// Messages for mutual exclusion (client <-> client)
+message AccessRequest {
+  int32 client_id = 1;
+  int64 lamport_timestamp = 2;
+  int32 request_number = 3;
+}
+
+message AccessResponse {
+  bool access_granted = 1;
+  int64 lamport_timestamp = 2;
+}
+
+message ReleaseMessage {
+  int32 client_id = 1;
+  int64 lamport_timestamp = 2;
+  int32 request_number = 3;
+}
+
+message ReleaseResponse {
+  bool acknowledged = 1;
+}
