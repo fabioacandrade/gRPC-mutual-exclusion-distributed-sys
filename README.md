@@ -23,6 +23,7 @@ Este projeto implementa um balanceador de carga de rede usando o algoritmo de Ot
 ├── ant_colony.py      # Implementação do algoritmo ACO
 ├── load_balancer.py   # Classe principal do balanceador de carga
 ├── main.py            # Script de simulação e demonstração
+├── examples.py        # Exemplos de uso diversos
 └── requirements.txt   # Dependências do projeto
 ```
 
@@ -60,6 +61,18 @@ python3 main.py
 Isso executará:
 1. Uma simulação completa com 5 servidores e 50 requisições
 2. Uma comparação entre ACO e atribuição aleatória
+
+### Executar Exemplos Diversos
+
+```bash
+python3 examples.py
+```
+
+Isso demonstrará:
+1. Uso básico com poucos servidores e requisições
+2. Cenário de carga pesada
+3. Ajuste de parâmetros e seus efeitos
+4. Servidores com capacidades diferentes
 
 ### Uso Programático
 
