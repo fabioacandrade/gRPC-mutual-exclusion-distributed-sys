@@ -266,7 +266,7 @@ Este projeto está licenciado sob a licença MIT.
 
 ## Autor
 
-Fabio Andrade
+Fabio Andrade, Lucas Alkmim, Sophia Carrazza
 
 ## Referências
 
